@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cmath>
 #include <string>
+#include <cassert>
 #include <float.h>
 using namespace std;
 
@@ -15,60 +16,55 @@ private:
     double mod; // 模长
     double arg; // 辐角
 public:
-    Complex(double real = 0, double imag = 0) : r(real), i(imag), mod(DBL_MAX), arg(DBL_MAX) {} // 先用DBL_MAX占mod和arg的位置，等到第一次要用到时再计算替换掉
+    constexpr Complex(double real = 0, double imag = 0) noexcept: r(real), i(imag), mod(DBL_MAX), arg(DBL_MAX) {} // 先用DBL_MAX占mod和arg的位置，等到第一次要用到时再计算替换掉
 
-    Complex operator+ (const Complex other) const{
+    constexpr Complex operator+ (const Complex other) const noexcept{
         Complex res;
         res.r = r + other.r;
         res.i = i + other.i;
         return res;
     }
 
-    Complex operator- (const Complex other) const {
+    constexpr Complex operator- (const Complex other) const noexcept{
         Complex res;
         res.r = r - other.r;
         res.i = i - other.i;
         return res;
     }
 
-    bool operator== (const Complex other) const {
+    constexpr bool operator== (const Complex other) const noexcept{
         return (r == other.r) && (i == other.i);
     } 
 
-    bool operator!= (const Complex other) const {
+    constexpr bool operator!= (const Complex other) const noexcept{
         return (r != other.r) || (i != other.i);
     }
 
     // conjugate of a Complex number 求共轭复数
-    Complex cg() const {               
+    constexpr Complex cg() const noexcept{               
         Complex res(r, -i);
         return res;
     }
 
-    Complex operator* (const Complex other) const {
+    constexpr Complex operator* (const Complex other) const noexcept{
         Complex res;
         res.r = r * other.r - i * other.i;
         res.i = r * other.i + i * other.r;
         return res;
     }
 
-    Complex operator/ (const Complex other) const {
-        Complex res(r, i);
-        return res * other.cg();
-    }
-
     // 输出实部
-    double get_real () const {
+    constexpr double get_real () const noexcept{
         return r;
     }
 
     // 输出虚部
-    double get_imag () const {
+    constexpr double get_imag () const noexcept{
         return i;
     }
 
     // 输出模长
-    double get_mod () {
+    constexpr double get_mod () noexcept{
         if (mod == DBL_MAX) {
             mod = sqrt(r * r + i * i);
         }
@@ -76,11 +72,20 @@ public:
     }
 
     // 输出辐角，采用弧度制
-    double get_arg () {
+    constexpr double get_arg () noexcept{
         if (arg == DBL_MAX) {
             arg = atan2(r, i);
         }
         return arg;
+    }
+
+    constexpr Complex operator/ (const Complex other) const noexcept{ 
+        assert(other.get_real() != 0 || other.get_imag() != 0);
+        Complex res;
+        double res_r = r * other.r + i * other.i;
+        double res_i = i * other.r - r * other.i;
+        double other_mod_2 = other.r * other.r + other.i * other.i;
+        return Complex(res_r/other_mod_2, res_i/other_mod_2);
     }
 
     // print 复数到屏幕上 

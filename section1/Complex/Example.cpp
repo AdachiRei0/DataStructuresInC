@@ -1,6 +1,9 @@
 #include "Complex.hpp"
+#include <time.h>
 
 int main () {
+    clock_t start = clock();
+
     Complex a(1, 2);
     Complex b(3, 4);
 
@@ -37,6 +40,10 @@ int main () {
 
     cout << "b.get_mod() = " ;
     cout << b.get_mod() << endl;
+
+    clock_t end = clock();
+
+    cout << "花费" << (double)(end - start) / CLOCKS_PER_SEC << "s" << endl;
 
     return 0;
 }
